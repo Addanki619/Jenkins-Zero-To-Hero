@@ -24,8 +24,8 @@ pipeline {
         SONAR_URL = "http://100.25.154.33:9000"
       }
       steps {
-        withCredentials([string(credentialsId: 'sonarqube', variable: 'ac18ad131cc25dda552c52a943b25060633ababb')]) {
-          sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn sonar:sonar -Dsonar.login=$a2c73264f26f848d2843874e1bfda8f49c6edb87 -Dsonar.host.url=${SONAR_URL}'
+        withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+          sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
         }
       }
     }
@@ -51,7 +51,7 @@ pipeline {
             GIT_USER_NAME = "Addanki619"
         }
         steps {
-            withCredentials([string(credentialsId: 'github', variable: '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')]) {
+            withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                 sh '''
                     git config user.email "yashwanthsaiaddanki@gmail.com"
                     git config user.name "Addanki619"
@@ -59,7 +59,7 @@ pipeline {
                     sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
                     git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-                    git push https://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@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
                 '''
             }
         }
